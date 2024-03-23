@@ -2,17 +2,23 @@
 import { useState } from "react";
 import Image from "next/image";
 import BigBrainSpotify from "/public/bigbrainspotify.png";
+import { generatePlaylist, Song } from "./playlistgpt";
 
 export default function Home() {
   const [txtAreaHeight, setTxtAreaHeight] = useState("");
+  const [playlist, setPlaylist] = useState([] as Song[]);
 
   const handleTxtAreaInput = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setTxtAreaHeight(event.target.value);
   };
+
+  async function getPlaylist(data: FormData) {
+    setPlaylist(await generatePlaylist(data.get("description")?.toString()));
+  }
   return (
-    <div className="flex h-screen flex-col bg-black text-white">
+    <div className="m-7 flex max-h-screen flex-col bg-black text-white">
       <header className="p-5">
         {/* Replace `logo.png` with the path to your logo, ensure it's visible on a dark background */}
         <Image
@@ -24,11 +30,15 @@ export default function Home() {
         />
       </header>
 
-      <main className="flex flex-grow items-center justify-center">
+      <main className="flex flex-grow justify-center">
         <div className="w-full max-w-xl">
-          <form className="flex items-center border-b border-green-500 py-1">
+          <form
+            action={getPlaylist}
+            className="flex items-center border-b border-green-500 py-1"
+          >
             <textarea
               className="mr-3 w-full resize-none appearance-none border-none bg-transparent px-2 py-1 leading-tight text-white focus:outline-none"
+              required={true}
               placeholder="What do you want to listen to?"
               value={txtAreaHeight}
               onChange={handleTxtAreaInput}
@@ -37,6 +47,7 @@ export default function Home() {
                 height: "auto",
                 minHeight: "48px",
               }}
+              name="description"
               onInput={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                 e.target.style.height = "auto";
                 e.target.style.height = e.target.scrollHeight + "px";
@@ -49,6 +60,43 @@ export default function Home() {
               Generate
             </button>
           </form>
+          <div className="max-h-fit overflow-y-scroll py-4">
+            <ul>
+              {playlist.map((song: Song, index) => (
+                <li
+                  key={index}
+                  className={`flex items-center justify-between py-2 ${index < playlist.length - 1 ? "border-b border-gray-800" : ""}`}
+                >
+                  <div>
+                    <p className="text-md">{song.name}</p>
+                    <p className="text-sm text-gray-400">{song.artist}</p>
+                  </div>
+                  <button className="text-green-500 transition-colors duration-150 hover:text-green-300">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 10v4a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </main>
     </div>
