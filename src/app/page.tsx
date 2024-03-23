@@ -1,13 +1,23 @@
 "use client";
-import { useState } from "react";
+import { BeakerIcon } from "@heroicons/react/24/solid";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import BigBrainSpotify from "/public/bigbrainspotify.png";
 import { generatePlaylist, Song } from "./playlistgpt";
+import { ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
+import { PlusIcon } from "@heroicons/react/24/solid";
 
 export default function Home() {
   const [txtAreaHeight, setTxtAreaHeight] = useState("");
   const [playlist, setPlaylist] = useState([] as Song[]);
+  const formRef = useRef<HTMLFormElement>(null);
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      formRef.current?.requestSubmit();
+    }
+  };
   const handleTxtAreaInput = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
@@ -19,7 +29,7 @@ export default function Home() {
   }
   return (
     <div className="m-7 flex max-h-screen flex-col bg-black text-white">
-      <header className="p-5">
+      <header className="py-1">
         {/* Replace `logo.png` with the path to your logo, ensure it's visible on a dark background */}
         <Image
           src={BigBrainSpotify}
@@ -33,6 +43,7 @@ export default function Home() {
       <main className="flex flex-grow justify-center">
         <div className="w-full max-w-xl">
           <form
+            ref={formRef}
             action={getPlaylist}
             className="flex items-center border-b border-green-500 py-1"
           >
@@ -41,6 +52,7 @@ export default function Home() {
               required={true}
               placeholder="What do you want to listen to?"
               value={txtAreaHeight}
+              onKeyDown={handleKeyDown}
               onChange={handleTxtAreaInput}
               rows={1}
               style={{
@@ -54,10 +66,10 @@ export default function Home() {
               }}
             />
             <button
-              className="flex-shrink-0 rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
+              className="flex-shrink-0 rounded-full bg-green-500 px-2 py-2 font-bold text-white hover:bg-green-700"
               type="submit"
             >
-              Generate
+              <ArrowLeftCircleIcon className="h-4 w-4" />
             </button>
           </form>
           <div className="max-h-fit overflow-y-scroll py-4">
