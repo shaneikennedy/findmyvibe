@@ -1,7 +1,14 @@
+"use client";
+import { useState } from "react";
 import Image from "next/image";
 import BigBrainSpotify from "/public/bigbrainspotify.png";
 
 export default function Home() {
+  const [txtAreaHeight, setTxtAreaHeight] = useState("");
+
+  const handleTxtAreaInput = (event) => {
+    setTxtAreaHeight(event.target.value);
+  };
   return (
     <div className="flex h-screen flex-col bg-black text-white">
       <header className="p-5">
@@ -18,11 +25,20 @@ export default function Home() {
       <main className="flex flex-grow items-center justify-center">
         <div className="w-full max-w-xl">
           <form className="flex items-center border-b border-green-500 py-2">
-            <input
-              className="mr-3 w-full appearance-none border-none bg-transparent px-2 py-1 leading-tight text-white focus:outline-none"
-              type="text"
-              placeholder="Search..."
-              aria-label="Search"
+            <textarea
+              className="mr-3 w-full resize-none appearance-none border-none bg-transparent px-2 py-1 leading-tight text-white focus:outline-none"
+              placeholder="Start typing..."
+              value={txtAreaHeight}
+              onChange={handleTxtAreaInput}
+              rows={1}
+              style={{
+                height: "auto",
+                minHeight: "48px",
+              }}
+              onInput={(e) => {
+                e.target.style.height = "auto";
+                e.target.style.height = e.target.scrollHeight + "px";
+              }}
             />
             <button
               className="flex-shrink-0 rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
