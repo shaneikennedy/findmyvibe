@@ -1,11 +1,9 @@
 "use client";
-import { BeakerIcon } from "@heroicons/react/24/solid";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import BigBrainSpotify from "/public/bigbrainspotify.png";
 import { generatePlaylist, Song } from "./playlistgpt";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
-import { PlusIcon } from "@heroicons/react/24/solid";
 
 export default function Home() {
   const [txtAreaHeight, setTxtAreaHeight] = useState("");
