@@ -5,6 +5,7 @@ import BigBrainSpotify from "/public/bigbrainspotify.png";
 import { generatePlaylist, Song } from "./playlistgpt";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 import { PlaylistSkeleton } from "./skeletons";
+import { PlusIcon } from "@heroicons/react/24/solid";
 
 export default function Home() {
   const [txtAreaHeight, setTxtAreaHeight] = useState("");
@@ -32,7 +33,6 @@ export default function Home() {
   return (
     <div className="m-7 flex max-h-screen flex-col bg-black text-white">
       <header className="py-1">
-        {/* Replace `logo.png` with the path to your logo, ensure it's visible on a dark background */}
         <Image
           src={BigBrainSpotify}
           alt="Find my vibe logo"
@@ -50,17 +50,13 @@ export default function Home() {
             className="flex items-center border-b border-green-500 py-1"
           >
             <textarea
-              className="mr-3 w-full resize-none appearance-none border-none bg-transparent px-2 py-1 leading-tight text-white focus:outline-none"
+              className="mr-3 h-auto w-full resize-none appearance-none border-none bg-transparent px-2 py-1 leading-tight text-white focus:outline-none"
               required={true}
               placeholder="What do you want to listen to?"
               value={txtAreaHeight}
               onKeyDown={handleKeyDown}
               onChange={handleTxtAreaInput}
               rows={1}
-              style={{
-                height: "auto",
-                minHeight: "48px",
-              }}
               name="description"
               onInput={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                 e.target.style.height = "auto";
@@ -74,6 +70,14 @@ export default function Home() {
             >
               <ArrowLeftCircleIcon className="h-4 w-4" />
             </button>
+            {playlist.length > 0 && (
+              <button
+                className="ml-1 flex-shrink-0 rounded-full bg-green-500 px-2 py-2 font-bold text-white hover:bg-green-700"
+                title="Add to my spotify"
+              >
+                <PlusIcon className="h-4 w-4" />
+              </button>
+            )}
           </form>
           {isLoading ? (
             <div className="max-h-fit overflow-y-scroll py-4">
