@@ -26,10 +26,10 @@ export default function Home() {
 
       <main className="flex flex-grow items-center justify-center">
         <div className="w-full max-w-xl">
-          <form className="flex items-center border-b border-green-500 py-2">
+          <form className="flex items-center border-b border-green-500 py-1">
             <textarea
               className="mr-3 w-full resize-none appearance-none border-none bg-transparent px-2 py-1 leading-tight text-white focus:outline-none"
-              placeholder="Start typing..."
+              placeholder="What do you want to listen to?"
               value={txtAreaHeight}
               onChange={handleTxtAreaInput}
               rows={1}
