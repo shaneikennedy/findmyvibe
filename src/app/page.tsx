@@ -6,7 +6,9 @@ import BigBrainSpotify from "/public/bigbrainspotify.png";
 export default function Home() {
   const [txtAreaHeight, setTxtAreaHeight] = useState("");
 
-  const handleTxtAreaInput = (event) => {
+  const handleTxtAreaInput = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
     setTxtAreaHeight(event.target.value);
   };
   return (
@@ -35,7 +37,7 @@ export default function Home() {
                 height: "auto",
                 minHeight: "48px",
               }}
-              onInput={(e) => {
+              onInput={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                 e.target.style.height = "auto";
                 e.target.style.height = e.target.scrollHeight + "px";
               }}
