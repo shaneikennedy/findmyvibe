@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Header } from "./components/header";
 import {
   createThread,
@@ -15,6 +15,11 @@ export default function Home() {
   const [songs, setSongs] = useState([] as Song[]);
   const [isLoading, setIsLoading] = useState(false);
   let [threadId, setThreadId] = useState(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [isLoading]);
 
   async function getPlaylist(data: FormData) {
     // Create thread
@@ -64,7 +69,11 @@ export default function Home() {
             isLoading={isLoading}
             playlistLength={songs.length}
           />
-          <h1 className="leading-2 mt-12 text-center text-5xl font-semibold text-stone-300">
+
+          <h1
+            ref={headingRef}
+            className="leading-2 mt-12 text-center text-5xl font-semibold text-stone-300"
+          >
             Spotify playlists for how you{"'"}re{" "}
             <span className="text-green-500">really</span> feeling
           </h1>
@@ -72,13 +81,9 @@ export default function Home() {
             Try one of our currated descriptions above to see how specific you
             can get
           </p>
-          {isLoading ? (
-            <div className="max-h-fit overflow-y-scroll py-4">
-              <PlaylistSkeleton />
-            </div>
-          ) : (
-            <Playlist songs={songs} />
-          )}
+          <div className="max-h-fit overflow-y-scroll py-4">
+            {isLoading ? <PlaylistSkeleton /> : <Playlist songs={songs} />}
+          </div>
         </div>
       </main>
     </div>
