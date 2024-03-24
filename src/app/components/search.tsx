@@ -56,21 +56,19 @@ export const Search: React.FC<SearchProps> = ({
           name="description"
         />
         <button
-          className="flex-shrink-0 rounded-full bg-green-500 px-2 py-2 font-bold text-stone-300 hover:bg-green-700"
+          className="flex-shrink-0 rounded-full bg-green-500 px-1 py-1 font-bold text-stone-300 hover:bg-green-700"
           title="Generate a playlist"
           onClick={() => setIsLoading(!isLoading)}
           type="submit"
         >
-          <ArrowLeftCircleIcon className="h-4 w-4 text-black" />
+          <ArrowLeftCircleIcon className="h-3 w-3 text-black" />
         </button>
-        {playlistLength > 0 && (
-          <button
-            className="ml-1 flex-shrink-0 rounded-full bg-green-500 px-2 py-2 font-bold text-stone-300 hover:bg-green-700"
-            title="Add to my spotify"
-          >
-            <PlusIcon className="h-4 w-4" />
-          </button>
-        )}
+        <button
+          className="ml-1 flex-shrink-0 rounded-full bg-green-500 px-1 py-1 font-bold text-stone-300 hover:bg-green-700"
+          title="Add to my spotify"
+        >
+          <PlusIcon className="h-3 w-3 text-black" />
+        </button>
       </form>
       <Examples chooseExample={setTxtAreaValue} />
     </>
