@@ -97,7 +97,7 @@ export const Playlist: React.FC<PlaylistProps> = ({ songs, description }) => {
             required
           />
           {createPlaylistError && (
-            <p className="p-4 align-middle text-sm text-red-500">
+            <p className="p-3 align-middle text-xs text-red-500">
               Error creating playlist: {createPlaylistError}
             </p>
           )}

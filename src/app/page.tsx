@@ -85,7 +85,7 @@ export default function Home() {
           </h1>
           <p className="mt-11 text-center text-xl leading-6 text-stone-300">
             Try one of our currated descriptions above to see how specific you
-            can get
+            can get and add it to your spotify in one click.
           </p>
           <div className="max-h-fit overflow-y-scroll py-4">
             {isLoading ? (
