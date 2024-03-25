@@ -8,6 +8,7 @@ export type Song = {
   name: string;
   artist: string;
   uri: string;
+  verified: boolean;
 };
 
 const assistantId = "asst_YXH58OLDB1rZ2rdDOHmNGFl0";
@@ -64,7 +65,7 @@ export async function pollForPlaylist(
   try {
     const songs = JSON.parse(response.data[0].content[0].text.value)
       .playlist as Array<Song>;
-    return songs;
+    return songs.map((s) => ({ ...s, verified: false }));
   } catch (e) {
     console.log(e);
     return [];

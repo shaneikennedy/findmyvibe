@@ -14,6 +14,7 @@ import { Playlist } from "./components/playlist";
 export default function Home() {
   const [songs, setSongs] = useState([] as Song[]);
   const [isLoading, setIsLoading] = useState(false);
+  const [playlistDescription, setPlaylistDescription] = useState("");
   let [threadId, setThreadId] = useState(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -35,6 +36,7 @@ export default function Home() {
 
     // Call to generate playlist
     const description = data.get("description")?.toString();
+    setPlaylistDescription(description!);
     let runId = null;
     try {
       runId = await generatePlaylist(description!, threadId!);
@@ -67,7 +69,6 @@ export default function Home() {
             searchCallback={getPlaylist}
             setIsLoading={setIsLoading}
             isLoading={isLoading}
-            playlistLength={songs.length}
           />
 
           <h1
@@ -82,7 +83,11 @@ export default function Home() {
             can get
           </p>
           <div className="max-h-fit overflow-y-scroll py-4">
-            {isLoading ? <PlaylistSkeleton /> : <Playlist songs={songs} />}
+            {isLoading ? (
+              <PlaylistSkeleton />
+            ) : (
+              <Playlist songs={songs} description={playlistDescription} />
+            )}
           </div>
         </div>
       </main>
