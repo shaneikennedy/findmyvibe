@@ -16,6 +16,9 @@ export const Playlist: React.FC<PlaylistProps> = ({ songs, description }) => {
   const [addPlaylistState, setAddPlaylistState] = useState(
     null as AddPlaylistState,
   );
+  const [createPlaylistError, setCreatePlaylistError] = useState<string | null>(
+    null,
+  );
 
   async function correctUris() {
     const songsWithUri = songs.map(async (s) => {
@@ -33,16 +36,21 @@ export const Playlist: React.FC<PlaylistProps> = ({ songs, description }) => {
     await spotify.authenticate();
     const songsWithUri = await correctUris();
     const user = await spotify.currentUser.profile();
-    const playlist = await spotify.playlists.createPlaylist(user.id, {
-      name: playlistName,
-      description,
-    });
-    await spotify.playlists.addItemsToPlaylist(
-      playlist.id,
-      songsWithUri.map((s) => s.uri),
-    );
-    setAddPlaylistState("done");
-    setTimeout(() => setAddPlaylistState(null), 5000);
+    try {
+      const playlist = await spotify.playlists.createPlaylist(user.id, {
+        name: playlistName,
+        description,
+      });
+      await spotify.playlists.addItemsToPlaylist(
+        playlist.id,
+        songsWithUri.map((s) => s.uri),
+      );
+      setAddPlaylistState("done");
+      setTimeout(() => setAddPlaylistState(null), 5000);
+    } catch (e) {
+      setCreatePlaylistError(`Error creating playlist: ${e}`);
+      setAddPlaylistState(null);
+    }
   }
 
   function updatePlaylistName(e: React.ChangeEvent<HTMLInputElement>) {
@@ -88,6 +96,11 @@ export const Playlist: React.FC<PlaylistProps> = ({ songs, description }) => {
             placeholder="Name your playlist"
             required
           />
+          {createPlaylistError && (
+            <p className="p-4 align-middle text-sm text-red-500">
+              Error creating playlist: {createPlaylistError}
+            </p>
+          )}
         </form>
       )}
       <ul>
