@@ -27,6 +27,10 @@ export default function Home() {
     spotify.authenticate();
   });
 
+  function removeSong(uri: string) {
+    setSongs(songs.filter((s) => s.uri !== uri));
+  }
+
   async function getPlaylist(data: FormData) {
     // Create thread
     if (threadId === null) {
@@ -91,7 +95,11 @@ export default function Home() {
             {isLoading ? (
               <PlaylistSkeleton />
             ) : (
-              <Playlist songs={songs} description={playlistDescription} />
+              <Playlist
+                removeSong={removeSong}
+                songs={songs}
+                description={playlistDescription}
+              />
             )}
           </div>
         </div>
