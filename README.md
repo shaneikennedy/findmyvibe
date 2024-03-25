@@ -4,6 +4,6 @@
   <img src="public/bigbrainspotify.png" width="400px" height="400px" alt="" />
 </p>
 
-Generate playlists by being as descriptive and specific as you want. Try it out at https://findmyvibe.vercel.app
+Generate playlists by being as descriptive and specific as you want. Try it out at https://findmyvibe.vercel.app and add any playlist you generate to your spotify account in one-click.
 
-**Disclaimer** Spotify intergration not finished yet, so you can't add it to your spotify from the app just yet, but it's on it's way.
+As of right now, you need a spotify account to use the app.
