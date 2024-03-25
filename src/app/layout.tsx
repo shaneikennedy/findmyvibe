@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Find my vibe",
-  description: "Generate playlists for your exact mood",
+  description: "Generate playlists for how you're really feeling",
 };
 
 export default function RootLayout({
