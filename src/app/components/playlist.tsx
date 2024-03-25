@@ -3,7 +3,7 @@ import { Song } from "../playlistgpt";
 import { spotify } from "../spotify";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { CheckIcon } from "@heroicons/react/24/solid";
-import { GenericSongItem } from "./songitem";
+import { GenericSongItem, SpotifySongItem } from "./songitem";
 
 type PlaylistProps = {
   description: string;

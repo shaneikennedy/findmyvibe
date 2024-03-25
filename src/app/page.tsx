@@ -12,12 +12,20 @@ import { Search } from "./components/search";
 import { Playlist } from "./components/playlist";
 import { spotify } from "./spotify";
 
+const loadingStates = [
+  "Understanding...",
+  "Searching...",
+  "Compiling...",
+  "Hang in there...",
+];
+
 export default function Home() {
   const [songs, setSongs] = useState([] as Song[]);
   const [isLoading, setIsLoading] = useState(false);
   const [playlistDescription, setPlaylistDescription] = useState("");
   let [threadId, setThreadId] = useState(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [loadingMessage, setLoadingMessage] = useState(loadingStates[0]);
 
   useEffect(() => {
     headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -25,13 +33,20 @@ export default function Home() {
 
   useEffect(() => {
     spotify.authenticate();
-  });
+  }, [songs]);
 
   function removeSong(uri: string) {
     setSongs(songs.filter((s) => s.uri !== uri));
   }
 
   async function getPlaylist(data: FormData) {
+    let loadingIndex = 0;
+    const loadingMessageInterval = setInterval(() => {
+      if (loadingIndex < loadingStates.length - 1) {
+        loadingIndex++;
+      }
+      setLoadingMessage(loadingStates[loadingIndex]);
+    }, 3000);
     // Create thread
     if (threadId === null) {
       try {
@@ -63,6 +78,7 @@ export default function Home() {
         }
         setSongs(await pollForPlaylist(threadId!, runId));
         setIsLoading(false);
+        clearInterval(loadingMessageInterval);
       } catch (e) {
         // Don't do anything, let the interval resolve this...
       }
@@ -87,13 +103,18 @@ export default function Home() {
             Spotify playlists for how you{"'"}re{" "}
             <span className="text-green-500">really</span> feeling
           </h1>
-          <p className="mt-11 text-center text-xl leading-6 text-stone-300">
+          <p className="mb-3 mt-11 text-center text-xl leading-6 text-stone-300">
             Try one of our currated descriptions above to see how specific you
             can get and add it to your spotify in one click.
           </p>
           <div className="max-h-fit overflow-y-scroll py-4">
             {isLoading ? (
-              <PlaylistSkeleton />
+              <>
+                <p className="animate-pulse text-center text-lg">
+                  {loadingMessage}
+                </p>
+                <PlaylistSkeleton />
+              </>
             ) : (
               <Playlist
                 removeSong={removeSong}
