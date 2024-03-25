@@ -6,8 +6,8 @@ const scopes = [
   "user-read-email",
   "playlist-modify-public",
 ];
-const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
-const clientId = process.env.SPOTIFY_CLIENT_ID;
+const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI;
+const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
 
 export const spotify = SpotifyApi.withImplicitGrant(
   clientId!,
