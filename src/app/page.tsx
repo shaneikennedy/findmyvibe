@@ -10,6 +10,7 @@ import {
 import { PlaylistSkeleton } from "./skeletons";
 import { Search } from "./components/search";
 import { Playlist } from "./components/playlist";
+import { spotify } from "./spotify";
 
 export default function Home() {
   const [songs, setSongs] = useState([] as Song[]);
@@ -21,6 +22,10 @@ export default function Home() {
   useEffect(() => {
     headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [isLoading]);
+
+  useEffect(() => {
+    spotify.authenticate();
+  });
 
   async function getPlaylist(data: FormData) {
     // Create thread
