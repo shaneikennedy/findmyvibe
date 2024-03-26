@@ -43,8 +43,6 @@ export default function Home() {
       const state = JSON.parse(stateJSON!);
       if (state.threadId) {
         setThreadId(state.threadId);
-        params.delete("state");
-        router.replace(`${pathName}/#${params.toString()}`, { scroll: false });
         if (state.action == "createPlaylist") {
           playlistRef.current?.scrollIntoView({
             behavior: "smooth",
