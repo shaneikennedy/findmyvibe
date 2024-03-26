@@ -11,6 +11,7 @@ import { PlaylistSkeleton } from "./skeletons";
 import { Search } from "./components/search";
 import { Playlist } from "./components/playlist";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { spotify } from "./spotify";
 
 const loadingStates = [
   "Understanding...",
@@ -48,9 +49,15 @@ export default function Home() {
             behavior: "smooth",
             block: "start",
           });
-          alert(
-            "Try creating the playlist again, we needed to log you in to sportify first",
-          );
+          spotify.authenticateWithState(stateJSON).then(() => {
+            const params = new URLSearchParams({ threadId: state.threadId });
+            router.replace(`${pathName}/?${params.toString()}`, {
+              scroll: false,
+            });
+            alert(
+              "Try creating the playlist again, we needed to log you in to sportify first",
+            );
+          });
         }
       }
     } else if (searchParams.has("threadId")) {
