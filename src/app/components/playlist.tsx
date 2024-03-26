@@ -49,7 +49,7 @@ export const Playlist: React.FC<PlaylistProps> = ({
     const token = await spotify.getAccessToken();
     console.log(token);
     if (token === null) {
-      spotify.authenticateWithState(JSON.stringify(state));
+      await spotify.authenticateWithState(JSON.stringify(state));
     }
     const songsWithUri = await correctUris();
     const user = await spotify.currentUser.profile();
