@@ -47,7 +47,7 @@ export async function createThread() {
 
 export async function pollForPlaylist(
   threadId: string,
-  runId = null,
+  runId: string | null = null,
 ): Promise<Array<Song>> {
   if (runId !== null) {
     await retryForStatus(

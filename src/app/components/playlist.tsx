@@ -4,6 +4,7 @@ import { spotify } from "../spotify";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { GenericSongItem, SpotifySongItem } from "./songitem";
+import { useSearchParams } from "next/navigation";
 
 type PlaylistProps = {
   description: string;
@@ -25,6 +26,7 @@ export const Playlist: React.FC<PlaylistProps> = ({
   const [createPlaylistError, setCreatePlaylistError] = useState<string | null>(
     null,
   );
+  const searchParams = useSearchParams();
 
   async function correctUris() {
     const songsWithUri = songs.map(async (s) => {
@@ -39,7 +41,16 @@ export const Playlist: React.FC<PlaylistProps> = ({
     return await Promise.all(songsWithUri);
   }
   async function handleAddToSpotify() {
-    await spotify.authenticate();
+    const state = {
+      threadId: searchParams.get("threadId"),
+      action: "createPlaylist",
+    };
+
+    const token = await spotify.getAccessToken();
+    console.log(token);
+    if (token === null) {
+      spotify.authenticateWithState(JSON.stringify(state));
+    }
     const songsWithUri = await correctUris();
     const user = await spotify.currentUser.profile();
     try {
@@ -52,6 +63,7 @@ export const Playlist: React.FC<PlaylistProps> = ({
         songsWithUri.map((s) => s.uri),
       );
       setAddPlaylistState("done");
+      setCreatePlaylistError(null);
       setTimeout(() => setAddPlaylistState(null), 5000);
     } catch (e) {
       setCreatePlaylistError(`Error creating playlist: ${e}`);

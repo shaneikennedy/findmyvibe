@@ -11,6 +11,7 @@ import { PlaylistSkeleton } from "./skeletons";
 import { Search } from "./components/search";
 import { Playlist } from "./components/playlist";
 import { spotify } from "./spotify";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const loadingStates = [
   "Understanding...",
@@ -23,23 +24,35 @@ export default function Home() {
   const [songs, setSongs] = useState([] as Song[]);
   const [isLoading, setIsLoading] = useState(false);
   const [playlistDescription, setPlaylistDescription] = useState("");
-  let [threadId, setThreadId] = useState(null);
+  let [threadId, setThreadId] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [loadingMessage, setLoadingMessage] = useState(loadingStates[0]);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathName = usePathname();
+  const [runId, setRunId] = useState<string | null>(null);
 
   useEffect(() => {
     headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [isLoading]);
 
   useEffect(() => {
-    spotify.authenticate();
-  }, [songs]);
+    const stateJSON = new URLSearchParams(location.hash).get("state");
+    if (stateJSON) {
+      const state = JSON.parse(stateJSON!);
+      setThreadId(state.threadId);
+    } else if (searchParams.has("threadId")) {
+      setThreadId(searchParams.get("threadId"));
+    }
+  }, [pathName, router, searchParams, threadId]);
 
-  function removeSong(uri: string) {
-    setSongs(songs.filter((s) => s.uri !== uri));
-  }
-
-  async function getPlaylist(data: FormData) {
+  useEffect(() => {
+    if (threadId === null) {
+      return;
+    }
+    if (!isLoading) {
+      setIsLoading(true);
+    }
     let loadingIndex = 0;
     const loadingMessageInterval = setInterval(() => {
       if (loadingIndex < loadingStates.length - 1) {
@@ -47,11 +60,32 @@ export default function Home() {
       }
       setLoadingMessage(loadingStates[loadingIndex]);
     }, 3000);
+
+    // Retrieve the thread on the server
+    let interval = setInterval(async () => {
+      try {
+        const songs = await pollForPlaylist(threadId!, runId);
+        if (songs.length > 0) {
+          clearInterval(interval);
+        }
+        setSongs(songs);
+        setIsLoading(false);
+        clearInterval(loadingMessageInterval);
+      } catch (e) {
+        // Don't do anything, let the interval resolve this...
+      }
+    }, 2000);
+  }, [threadId, runId]);
+
+  function removeSong(uri: string) {
+    setSongs(songs.filter((s) => s.uri !== uri));
+  }
+
+  async function getPlaylist(data: FormData) {
     // Create thread
     if (threadId === null) {
       try {
         threadId = await createThread();
-        setThreadId(threadId);
       } catch (e) {
         alert("Problems starting the thread :(");
         return;
@@ -69,20 +103,11 @@ export default function Home() {
       return;
     }
 
-    // Retrieve the thread on the server
-    let interval = setInterval(async () => {
-      try {
-        const songs = await pollForPlaylist(threadId!, runId);
-        if (songs.length > 0) {
-          clearInterval(interval);
-        }
-        setSongs(await pollForPlaylist(threadId!, runId));
-        setIsLoading(false);
-        clearInterval(loadingMessageInterval);
-      } catch (e) {
-        // Don't do anything, let the interval resolve this...
-      }
-    }, 2000);
+    setRunId(runId);
+    setThreadId(threadId);
+    const params = new URLSearchParams(searchParams);
+    params.set("threadId", threadId!);
+    router.replace(`${pathName}?${params.toString()}`);
   }
 
   return (
