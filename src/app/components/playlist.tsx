@@ -3,13 +3,13 @@ import { Song } from "../playlistgpt";
 import { spotify } from "../spotify";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { CheckIcon } from "@heroicons/react/24/solid";
-import { GenericSongItem, SpotifySongItem } from "./songitem";
-import { useSearchParams } from "next/navigation";
+import { GenericSongItem } from "./songitem";
 
 type PlaylistProps = {
   description: string;
   songs: Array<Song>;
   removeSong: any;
+  threadId: string | null;
 };
 
 type AddPlaylistState = null | "loading" | "done";
@@ -18,6 +18,7 @@ export const Playlist: React.FC<PlaylistProps> = ({
   songs,
   description,
   removeSong,
+  threadId,
 }) => {
   const [playlistName, setPlaylistName] = useState("");
   const [addPlaylistState, setAddPlaylistState] = useState(
@@ -26,7 +27,6 @@ export const Playlist: React.FC<PlaylistProps> = ({
   const [createPlaylistError, setCreatePlaylistError] = useState<string | null>(
     null,
   );
-  const searchParams = useSearchParams();
 
   async function correctUris() {
     const songsWithUri = songs.map(async (s) => {
@@ -42,14 +42,13 @@ export const Playlist: React.FC<PlaylistProps> = ({
   }
   async function handleAddToSpotify() {
     const state = {
-      threadId: searchParams.get("threadId"),
+      threadId,
       action: "createPlaylist",
     };
 
-    const token = await spotify.getAccessToken();
-    console.log(token);
-    if (token === null) {
-      await spotify.authenticateWithState(JSON.stringify(state));
+    const token = await spotify.authenticateWithState(JSON.stringify(state));
+    if (!token.authenticated) {
+      return;
     }
     const songsWithUri = await correctUris();
     const user = await spotify.currentUser.profile();

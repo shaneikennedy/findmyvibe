@@ -10,7 +10,6 @@ import {
 import { PlaylistSkeleton } from "./skeletons";
 import { Search } from "./components/search";
 import { Playlist } from "./components/playlist";
-import { spotify } from "./spotify";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const loadingStates = [
@@ -31,20 +30,35 @@ export default function Home() {
   const router = useRouter();
   const pathName = usePathname();
   const [runId, setRunId] = useState<string | null>(null);
+  const playlistRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [isLoading]);
 
   useEffect(() => {
-    const stateJSON = new URLSearchParams(location.hash).get("state");
+    const params = new URLSearchParams(location.hash);
+    const stateJSON = params.get("state");
     if (stateJSON) {
       const state = JSON.parse(stateJSON!);
-      setThreadId(state.threadId);
+      if (state.threadId) {
+        setThreadId(state.threadId);
+        params.delete("state");
+        router.replace(`${pathName}/#${params.toString()}`, { scroll: false });
+        if (state.action == "createPlaylist") {
+          playlistRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+          alert(
+            "Try creating the playlist again, we needed to log you in to sportify first",
+          );
+        }
+      }
     } else if (searchParams.has("threadId")) {
       setThreadId(searchParams.get("threadId"));
     }
-  }, [pathName, router, searchParams, threadId]);
+  }, [searchParams, pathName, router]);
 
   useEffect(() => {
     if (threadId === null) {
@@ -107,7 +121,7 @@ export default function Home() {
     setThreadId(threadId);
     const params = new URLSearchParams(searchParams);
     params.set("threadId", threadId!);
-    router.replace(`${pathName}?${params.toString()}`);
+    router.replace(`${pathName}?${params.toString()}`, { scroll: false });
   }
 
   return (
@@ -132,7 +146,7 @@ export default function Home() {
             Try one of our currated descriptions above to see how specific you
             can get and add it to your spotify in one click.
           </p>
-          <div className="max-h-fit overflow-y-scroll py-4">
+          <div ref={playlistRef} className="max-h-fit overflow-y-scroll py-4">
             {isLoading ? (
               <>
                 <p className="animate-pulse text-center text-lg">
@@ -145,6 +159,7 @@ export default function Home() {
                 removeSong={removeSong}
                 songs={songs}
                 description={playlistDescription}
+                threadId={threadId}
               />
             )}
           </div>
