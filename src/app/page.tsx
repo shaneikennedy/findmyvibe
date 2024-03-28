@@ -38,11 +38,12 @@ export default function Home() {
   }, [isLoading]);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.hash);
-    const stateJSON = params.get("state");
+    const hashParams = new URLSearchParams(location.hash);
+    const queryParams = new URLSearchParams(searchParams);
+    const stateJSON = hashParams.get("state");
     if (stateJSON) {
       const state = JSON.parse(stateJSON!);
-      if (state.threadId) {
+      if (state && state.threadId) {
         setThreadId(state.threadId);
         if (state.action == "createPlaylist") {
           playlistRef.current?.scrollIntoView({
@@ -62,6 +63,22 @@ export default function Home() {
       }
     } else if (searchParams.has("threadId")) {
       setThreadId(searchParams.get("threadId"));
+    } else if (queryParams.has("error")) {
+      if (queryParams.has("state")) {
+        const state = JSON.parse(stateJSON!);
+        if (state && state.threadId) {
+          setThreadId(state.threadId);
+          if (state.action == "createPlaylist") {
+            playlistRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        }
+      }
+      alert(
+        "Could not authenticate your spotify account for findmyvibe. This means there was a problem with your login or you need to request access to use findmyvibe. To request access, DM @shaneikennedy on twitter.",
+      );
     }
   }, [searchParams, pathName, router]);
 
